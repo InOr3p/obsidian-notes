@@ -1,4 +1,4 @@
-d 
+ 
 ### Exercise 1: XSS
 
 There's XSS on comments. Note that only your last comment is shown and you restore the initial state by logging out. Could you exploit XSS and inject an alert to be shown when some of the "close the comment" button is pressed? To be more precise, you have to post a comment so that the page you get back has the modified behavior (and you can verify it by pressing the injected button to trigger the alert). The alert must show the message **Venom is a good boy!**.
@@ -58,10 +58,10 @@ Credit_card: 7114 0996 5635 3972
 
 Use the rockyou.txt file to bruteforce the following password hashes (1 point each):
 - c51e7a23a59ef8d76892f207b517eaf0 -> MD5 -> millie
-- \$2a\$09$aJUc7jD71mV.KbWgyO2zweLWyUYoxHb8G/LsGXFgjfx9ynqusxUtO
-- \$1$NOcJM.4s\$kIKttixk75d7wgMqDjyYK.
+- \$2a\$09$aJUc7jD71mV.KbWgyO2zweLWyUYoxHb8G/LsGXFgjfx9ynqusxUtO -> bcrypt -> leonardo
+- \$1$NOcJM.4s\$kIKttixk75d7wgMqDjyYK. -> md5crypt -> COD{babylove}
 
-The first and the secondpasswords are among the first 1000 lines of rockyou.txt. The third password is also among the first 1000 lines of rockyou.txt, but it was modified to have the format *COD{original-password}*.
+The first and the second passwords are among the first 1000 lines of rockyou.txt. The third password is also among the first 1000 lines of rockyou.txt, but it was modified to have the format *COD{original-password}*.
 
 
 ```bash
@@ -79,15 +79,27 @@ head -n 1000 rockyou.txt > rockyou_top1000.txt
 
 To take the first 1000 lines of rockyou.txt.
 
-- First hash:
-	use https://crackstation.net/ or with hashcat:
-	
+##### First hash
+
+Use https://crackstation.net/ or with hashcat:
+
 ```bash
 hashcat -m 0 -a 0 hash.txt rockyou_top1000.txt 
 ```
 
+##### Second hash
 
-- Second hash:
+```bash
+hashid '$2a$09$aJUc7jD71mV.KbWgyO2zweLWyUYoxHb8G/LsGXFgjfx9ynqusxUtO'
+```
+
+to find the hashing algorithm. Otherwise, use:
+
+```bash
+hashcat --help less | grep \$2
+```
+
+Then decrypt with:
 
 ```bash
 hashcat -m 3200 -a 0 hash.txt rockyou_top1000.txt 
@@ -96,5 +108,22 @@ hashcat -m 3200 -a 0 hash.txt rockyou_top1000.txt
 If it doesn't show the solution, add `--show` to the command.
 
 
-- Third hash:
+##### Third hash
 
+```bash
+sed 's/^/COD{/' rockyou_top1000.txt | sed 's/$/}/' > modified_rockyou_1000.txt
+```
+
+to format the first 100 entries of rockyou.txt as *COD{original-password}*.
+
+Then use the following command to find out the hashing algorithm:
+
+```bash
+hashcat --help less | grep \$1
+```
+
+Decrypt the password:
+
+```bash
+hashcat -m 500 -a 0 hash.txt modified_rockyou_1000.txt 
+```
