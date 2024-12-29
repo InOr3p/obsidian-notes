@@ -125,14 +125,49 @@ It is far less secure, because all communication happens via browser redirects -
 
 
 
+## Vulnerabilities
+
+- Open redirects lead to token theft
+- Improper validation
+- Custom implementations
+- Excessive trust on confidentiality of tokens stored in the browser (if there is XSS, tokens can be stolen)
 
 ## Labs
 
+#### Flawed CSRF protection
+
+Although many components of the OAuth flows are optional, some of them are strongly recommended, like the `state` parameter.
+
+The `state` parameter should ideally contain an unguessable value, such as the hash of something tied to the user's session when it first initiates the OAuth flow. This value is then passed back and forth between the client application and the OAuth service as a form of CSRF token for the client application. Therefore, if you notice that the authorization request does not send a `state` parameter, it potentially means that you can initiate an OAuth flow before tricking a user's browser into completing it, similar to a traditional CSRF attack.
+
+Consider a website that allows users to log in using either a classic, password-based mechanism or by linking their account to a social media profile using OAuth. In this case, if the application fails to use the `state` parameter, an attacker could potentially hijack a victim user's account on the client application by binding it to their own social media account.
 ###### Force OAuth profile linking
 
-- There's no state, hence no binding between profile and code (receive by the OAuth server)
+- There's no state, hence no binding between profile and code (received by the OAuth server)
 - If there are some problems: do not use "Login with social media", use instead "Attach social profile"
 
+### Leaking authorization codes and access tokens
+
+The most infamous OAuth-based vulnerability is when the configuration of the OAuth service itself enables attackers to steal authorization codes or access tokens associated with other users' accounts. By stealing a valid code or token, the attacker may be able to access the victim's data. Ultimately, this can completely compromise their account - the attacker could potentially log in as the victim user on any client application that is registered with this OAuth service.
+
+Depending on the grant type, either a code or token is sent via the victim's browser to the `/callback` endpoint specified in the `redirect_uri` parameter of the authorization request. If the OAuth service fails to validate this URI properly, an attacker may be able to construct a CSRF-like attack, tricking the victim's browser into initiating an OAuth flow that will send the code or token to an attacker-controlled `redirect_uri`.
+
+In the case of the authorization code flow, an attacker can potentially steal the victim's code before it is used. They can then send this code to the client application's legitimate `/callback` endpoint (the original `redirect_uri`) to get access to the user's account. In this scenario, an attacker does not even need to know the client secret or the resulting access token. As long as the victim has a valid session with the OAuth service, the client application will simply complete the code/token exchange on the attacker's behalf before logging them in to the victim's account.
+
+Note that using `state` or `nonce` protection does not necessarily prevent these attacks because an attacker can generate new values from their own browser.
 ###### OAuth accoung hijacking via redirect_uri
 
 - There's no check on the redirect_uri (we can inject a malicious uri, that is the exploit server)
+- Take the /auth request and modify the redirect_uri to point to a landing page of the exploit server.  
+- Trigger top-level navigation and take the code from the log.  
+- Invalidate your session (delete the session cookie).  
+- Use the code to authenticate (visit /oauth-callback with the stolen code).
+
+## Prevention
+
+- Use allow list to avoid malicious open redirects and improper validation
+-  Use only well established libraries
+- Confidentiality of tokens:
+	- Application storage is better than cookies: at least data is not transmitted with every request
+	- Session storage is better than application storage: different tabs, different data
+	- Browser memory is better than session storage: must study the source code to find data
