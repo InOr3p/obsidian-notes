@@ -4,9 +4,9 @@ Reference books:
 
 - https://book.hacktricks.xyz
 
-Linux distro version to use: **Ubuntu 22.04 LTS**
+Linux distro version da usare: **Ubuntu 22.04 LTS**
 
-- How to install libc and run 32-bit programs in C:
+- Installare libc e run programmi 32-bit in C:
 
 ```bash
 sudo dpkg --add-architecture i386
@@ -20,13 +20,13 @@ sudo apt install gcc-multilib g++-multilib
 gcc -m32 -o my_program my_program.c
 ```
 
-Install **Terminal Multiplexer**: `sudo apt install tmux`
+Installare **Terminal Multiplexer**: `sudo apt install tmux`
 
-Install **Debugger**: `sudo apt install gdb`
+Installare **Debugger**: `sudo apt install gdb`
 
-`objdump -d <eseguibile>` : to obtain assembly code from the exe
-`objdump -s -j .rodata <eseguibile>`:  to analyze the memory location *.rodata* of the exe
-`strings <eseguibile>`: prints all the strings used by the exe
+`objdump -d <eseguibile>`: per ottenere codice assembly da file exe
+`objdump -s -j .rodata <eseguibile>`:  per analizzare memory location *.rodata* di file exe
+`strings <eseguibile>`: stampa tutte le stringhe usate dal file exe
 
 In **gdb**:
 	**b -> breakpoint**
@@ -35,7 +35,7 @@ In **gdb**:
 	**file** -> to select the file
 	**disass main** -> to disassemble the main function
 	**set disassembly-flavor intel** -> sets the output syntax to the intel default
-	**x/s <memory address>** -> *x* means *examine* and *s* is the format *string*. This command is used to print the content of the specified memory address as a format string
+	**x/s mem_addr** -> *x* means *examine* and *s* is the format *string*. This command is used to print the content of the specified memory address as a format string
 
 Exercises:
 	https://book.rada.re/crackmes/ioli/intro.html
