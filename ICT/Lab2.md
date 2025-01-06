@@ -26,13 +26,13 @@
 1. Compiliamo il programma 32-bit:
 
 ```bash
-gcc -m32 -o file.exe file.c
+gcc -m32 -o vuln vuln.c
 ```
 
 2. Eseguiamo il programma appena compilato in questo modo:
 
 ```bash
-file.exe stringa_molto_lunga
+vuln stringa_molto_lunga
 ```
 
    - *stringa_molto_lunga* dovrebbe accettare al più (circa) 64 caratteri. Nel caso in cui si inserisce una stringa da 100 caratteri, si va in errore (Segmentation fault). Abbiamo sovrascritto parte dello stack.  
@@ -40,7 +40,7 @@ file.exe stringa_molto_lunga
 3. Analizziamo il programma appena eseguito:
 
 ```bash
-checksec --file=file.exe
+checksec --file=vuln
 ```
 
 - **checksec**: comando utilizzato per analizzare un file binario e verificare se sono state abilitate determinate misure di sicurezza durante la compilazione o il linking.
@@ -51,9 +51,9 @@ checksec --file=file.exe
 gcc -m32 -z execstack -no-pie -fno-stack-protector
 ```
 
-   - *-z execstack*: abilita l'esecuzione di codice che viene copiato sullo stack. In pratica disattiva opzione di sicurezza NX.
+   - *-z execstack*: abilita l'esecuzione di codice dallo stack. In pratica disattiva opzione di sicurezza NX.
 
-   - *-no-pie*: elimina PIE, cioè DEP e randomizzazione degli indirizzi (a livello binario). La randomizzazione deve anche essere disattivata a livello di sistema operativo.
+   - *-no-pie*: elimina PIE (*Position Independent Executable*), cioè DEP (*Data Execution Prevention*) e **ASLR** (*Address Space Layout Randomization*) randomizzazione degli indirizzi (a livello binario). La randomizzazione deve anche essere disattivata a livello di sistema operativo.
 
    - *-fno-stack-protector*: elimina *Canary*.
 
@@ -67,7 +67,7 @@ gcc -m32 -z execstack -no-pie -fno-stack-protector
 
 - *si*: per muoversi di uno step in avanti in gdb
 
-- Inviando una stringa del tipo AA...AABBBB riusciamo a capire qual è l'ultimo indirizzo di memoria eseguibile (su cui dobbiamo inserire lo shell code). **Nota**: ogni indirizzo di memoria è 32bit in little-endian!
+7. Inviando una stringa molto lunga del tipo AA...AABBBB riusciamo a capire qual è l'ultimo indirizzo di memoria eseguibile (su cui dobbiamo inserire lo shell code). **Nota**: ogni indirizzo di memoria è 32bit in little-endian!
  
 - Per verificare la randomizzazione degli indirizzi (2 in output per indirizzi randomici):
 
@@ -75,9 +75,15 @@ gcc -m32 -z execstack -no-pie -fno-stack-protector
 cat /proc/sys/kernel/randomize_va_space
 ```
 
-- Comando **?** per disattivare la randomizzazione. 
+- Comando per disattivare la randomizzazione:
 
-- Per assemblare un file assembly in un object file:
+```bash
+echo 0 | sudo tee /proc/sys/kernel/randomize_va_space
+```
+
+8. Troviamo online e scarichiamo un *execve*, un payload che eseguirà uno shellcode (RCE) quando l'eseguibile malevolo verrà runnato.
+
+9. Per assemblare un file assembly in un object file:
 
 ```bash
 nasm -f elf32 execve.asm
@@ -95,10 +101,16 @@ ld -m elf_i386 execve.o -o execve
 x/200
 ```
 
-  questo comando serve per trovare la cella di memoria in cui è contenuto l'inizio dello shell code. Per trovare l'inizio dello shell code, basta cercare gli indirizzi subito precedenti ai 90909090.
+oppure:
+
+```bash
+x/200x $esp
+```
+
+  questo comando fa visualizzare le prime 200 celle dello stack a partire dal indirizzo **$esp** (*stack pointer*) e in questo caso serve per trovare la cella di memoria in cui è contenuto l'inizio dello shell code. Per trovare l'inizio dello shell code, basta cercare gli indirizzi subito precedenti ai 90909090.
 
    
-- Per eseguire il file con shell code in gdb:
+10. Per eseguire il file con shell code in gdb:
 
 ```bash
 run $(python3 file.py)
