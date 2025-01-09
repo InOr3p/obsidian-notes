@@ -20,7 +20,7 @@ echo 0 | sudo
 
 - Vulnerabilità *format string*: *printf* ci permette di stampare anche valori contenuti nello stack.
 
-- *strcopy* e *printf* hanno vulnerabilità: quando incontrano un NULL byte, interrompono la loro esecuzione
+- *strcpy* e *printf* hanno vulnerabilità: quando incontrano un NULL byte, interrompono la loro esecuzione
 
 - *gets* non ha la stessa vulnerabilità di cui sopra, ma verrà usato per il buffer overflow (dato che gets non effettua alcun controllo sulla lunghezza del buffer dato in input)
 

@@ -95,10 +95,22 @@ nasm -f elf32 execve.asm
 ld -m elf_i386 execve.o -o execve
 ```
 
+10. Creiamo un **Proof of concept** *poc.py* che darà in output una stringa costituita da:
+	- una serie di NOP (No-operations)
+	- shellcode creato precedentemente
+	- indirizzo iniziale dello shellcode, che sarà piazzato negli ultimi bits prima che l'eseguibile vada in overflow, ovvero nella cella di memoria dell'indirizzo di ritorno della funzione vulnerabile
+- In questo modo, quando la funzione vulnerabile termina, viene eseguito lo shellcode
+
+11. Troviamo l'indirizzo iniziale dello shellcode:
+
+- eseguiamo in gdb il file vulnerabile, dando in input il poc.py (che al momento ha come indirizzo di shellcode un indirizzo casuale).
+
+- Mettiamo un breakpoint alla fine della *vulnerable_function* (alla *return*) e ispezioniamo lo stack. Possiamo scegliere come indirizzo di shellcode un indirizzo centrale in cui ci sono NOP. In questo modo, dato che le NOP non vengono eseguite (perchè sono No-operation), il programma salta fino alla prima operazione diversa da NOP, ovvero fino allo shellcode (abbiamo inserito lo shellcode subito dopo le NOP)
+
 -  Per ispezionare le prime 200 celle di memoria dello stack:
 
 ```bash
-x/200
+x/200 $esp
 ```
 
 oppure:
@@ -107,8 +119,7 @@ oppure:
 x/200x $esp
 ```
 
-  questo comando fa visualizzare le prime 200 celle dello stack a partire dal indirizzo **$esp** (*stack pointer*) e in questo caso serve per trovare la cella di memoria in cui è contenuto l'inizio dello shell code. Per trovare l'inizio dello shell code, basta cercare gli indirizzi subito precedenti ai 90909090.
-
+  questo comando fa visualizzare le prime 200 celle dello stack a partire dal indirizzo **$esp** (*stack pointer*) e in questo caso serve per trovare la cella di memoria in cui sono contenute le NOP.
    
 10. Per eseguire il file con shell code in gdb:
 

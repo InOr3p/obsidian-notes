@@ -2,27 +2,35 @@
 
 - **NX**: *Not Executable*, quando attivo disabilita l'esecuzione di *shell code*
 
-- Per riabilitarlo, si elimina *-z execstack*  
+- Per riabilitarlo, si elimina *-z execstack*  dal comando usato per compilare il programma. Il comando adesso diventa:
 
-- Per verificare il cambiamento degli indirizzi:
+```bash
+gcc -m32 -no-pie -fno-stack-protector -o vuln32 vuln.c
+```
+
+- Per verificare se l’indirizzo di caricamento della **libc** è cambiato o rimasto sempre uguale:
 
  ```bash
- ldd filename.exe | grep libc
+ ldd vuln32 | grep libc
  ```
 
 
-- Per caricare la libc sempre allo stesso indirizzo:
+- Per caricare la libc sempre allo stesso indirizzo (ovvero disattivare ASLR a livello di sistema operativo):
 
 ```bash
 echo 0 | sudo tee /proc/sys/kernel/randomize_va_space
 ```
   
 
-- Il programma va sempre in **Segmentation fault**. Per risolvere, si può usare la **Ret2libc** (*Return To libc*)  
+- Se proviamo ad eseguire il nuovo programma con *poc.py*, adesso andrà sempre in **Segmentation fault**, perchè avendo riabilitato **NX** (stack non eseguibile), non potremo più eseguire lo shellcode. Per risolvere questo problema, ricorriamo a **Ret2libc** (*Return To libc*).
 
-- Libc ha una serie di indirizzi di base ad offset di memoria prestabiliti:
+### Ret2Libc
 
-    - 0x0 -> BASE ADDRESS (visibile con comando `ldd filename.exe | grep libc`)
+- Sfruttiamo le funzioni della libc per ottenere una shell.
+
+- Libc contiene una serie di funzioni. Ha solitamente un indirizzo di base e ogni funzione si trova ad offset di memoria prestabiliti dall'indirizzo di base:
+
+    - 0x0 -> BASE ADDRESS (visibile con comando `ldd vuln32 | grep libc`)
 
     - 0x1 -> SYSTEM
 
@@ -36,17 +44,21 @@ echo 0 | sudo tee /proc/sys/kernel/randomize_va_space
 
     - 0x19 -> bin/sh (argomento della funzione)
 
-- `p system` (in GDB con eseguibile runnato) per trovare l'indirizzo di funzione SYSTEM. Si può copiare in pocLIBC.py nella variabile system_addr
+1. Creiamo un nuovo *Proof of concept*
 
-- `grep "bin/sh"` (in GDB) per trovare l'indirizzo di funzione bin/sh. Si può copiare in pocLIBC.py nella variabile binsh_addr
+2.  Usiamo `p system` (in GDB con eseguibile runnato) per trovare l'indirizzo della funzione SYSTEM della libc e copiamolo in *pocLIBC.py* nella variabile *system_addr* 0xf7dcc170
 
-- Eseguiamo il programma: `run $(python3 pocLIBC.py)`
+3. Usiamo `find &__libc_start_main, +9999999, "/bin/sh"` (in GDB) per trovare l'indirizzo di funzione *bin/sh* e copiamolo in *pocLIBC.py* nella variabile *binsh_addr*. Per verificare che sia l'indirizzo giusto, usiamo `x/s <indirizzo>` -> restituisce tutte le stringhe all’indirizzo `<indirizzo>` (se ce ne sono), quindi se restituisce `/bin/sh` è l’indirizzo giusto 
 
-- Adesso però il programma esce in Segmentation fault. Per farlo terminare in modo opportuno, basta mettere l'indirizzo della funzione EXIT di libc (si può trovare eseguendo `p exit` in GDB) nella variabile return_addr
+4. Eseguiamo il programma: `run $(python3 pocLIBC.py)`
 
-- `filename.exe $(python3 pocLIBC.py)` per eseguire l'exploit fuori dal GDB
+5. Adesso però il programma esce in **Segmentation fault**. Per farlo terminare in modo opportuno, basta mettere l'indirizzo della funzione EXIT di libc (si può trovare eseguendo `p exit` in GDB) nella variabile *return_addr*
 
-- Per trovare gli offset dall'indirizzo di base di LIBC all'indirizzo di SYSTEM:
+6.  `vuln $(python3 pocLIBC.py)` per eseguire l'exploit fuori dal GDB
+
+- Ci sono varianti del *pocLIBC.py* in cui si specifica solo l'indirizzo di base della libc e si calcolano gli indirizzi di system, bin/sh ed exit utilizzando gli offset (distanza dall'indirizzo di base della libc) invece di indicare gli specifici indirizzi delle funzioni.
+
+- Per trovare l'offset dall'indirizzo di base di LIBC all'indirizzo di SYSTEM:
 
 ```bash
 strings -a -t x /lib/i386-linux-gnu/libc.so.6 | grep '/bin/sh'
