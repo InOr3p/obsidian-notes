@@ -1,16 +1,8 @@
 ### Buffer overflow con meccanismi di sicurezza attivi (2)
 
-- Impostiamo misure di sicurezza a nulla:
-
-```bash
-echo 0 | sudo 
-```  
-
-- **Canary**: ogni volta che viene eseguito un file, viene inserita una stringa di 4 byte nello stack alla fine del buffer, subito dopo le variabili locali. Quando l'esecuzione del file termina, il programma verifica che il canary sia ancora sullo stack: se non c'è, significa che è avvenuto un buffer overflow (il canary è stato sovrascritto).
+- **Canary**: ogni volta che viene eseguito un file, viene inserita a *run-time* una stringa di 4 byte nello stack alla fine del buffer, subito dopo le variabili locali. Poco prima che l'esecuzione del file termini, il programma verifica che il canary sia ancora sullo stack: se non c'è, significa che è avvenuto un buffer overflow (il canary è stato sovrascritto). Ad ogni esecuzione, il canary è sempre diverso, ma è riconoscibile perchè termina con un byte 00 (*NULL byte*).
 
 #### Come bypassare il canary?
-
-- Il canary di solito ha un byte 00 (*NULL byte*) alla fine. 
 
 - Nel payload malevolo possiamo inserire il canary alla fine della stringa che causerà il buffer overflow.
 
@@ -18,16 +10,16 @@ echo 0 | sudo
 
 - Se abbiamo disattivato **PIE** (*Position Independent Executable*), possiamo sapere precisamente dove viene posizionato il canary.
 
-- Vulnerabilità *format string*: *printf* ci permette di stampare anche valori contenuti nello stack.
+- Sfruttiamo la vulnerabilità **format string**: *printf* ci permette di stampare anche valori contenuti nello stack.
 
-- *strcpy* e *printf* hanno vulnerabilità: quando incontrano un NULL byte, interrompono la loro esecuzione
+- *strcpy* e *printf* hanno una vulnerabilità: quando incontrano un NULL byte, interrompono la loro esecuzione
 
 - *gets* non ha la stessa vulnerabilità di cui sopra, ma verrà usato per il buffer overflow (dato che gets non effettua alcun controllo sulla lunghezza del buffer dato in input)
 
-- Usiamo il nuovo eseguibile vulnerable.c:
+- Usiamo il nuovo eseguibile *vulnerable.c*:
 
 ```bash
-gcc -m32 -no-pie -fno-stack-protector -o vuln vulnerable.c
+gcc -m32 -fstack-protector -no-pie -o vuln vulnerable.c
 ```
 
 - Per verificare che i meccanismi di sicurezza siano disattivati, eseguire:
@@ -36,17 +28,11 @@ gcc -m32 -no-pie -fno-stack-protector -o vuln vulnerable.c
 checksec --file=vuln
 ```
 
-- In gdb:
+1. Con gef, per trovare il canary:
 
-    - `b address_gets`
+       `canary`
 
-    - `run malicious_input (a*80)`
-
-    - `x/100x $esp` (stampa le prime 100 righe dello stack)
-
-    - Con gef, per trovare il canary:
-
-      - `canary`
+2. Per trovare l'offset del canary dall'inizio dello stack possiamo usare la _format string vulnerability_:
 
 - `./vuln %p` (restituisce un indirizzo dello stack in ordine, dall'inizio)
 
@@ -54,17 +40,29 @@ checksec --file=vuln
 
 - `./vuln '%p %p %p'`
 
-- `./vuln '%4$p'` (restituisce l'indirizzo 4 dello stack)
+- `./vuln '%4$p'` (restituisce l'indirizzo in posizione 4 dello stack)
+
+- Con una sorta di ricerca binaria lo possiamo trovare facilmente (facendo attenzione al NULL byte finale). In questo caso, per ricerca binaria si intende tentare di trovare il canary in intervalli sullo stack (ad esempio nelle prime 8 posizioni dello stack a partire dall'inizio, cioè dallo *stack pointer*, quindi tra `'%1$p'` e `'$8$p'`)
+
+- La posizione a cui troveremo il canary sarà il suo offset (quindi avendo trovato il canary a `'$27$p'`, l'offset sarà 27).
+
+3. Usiamo la libreria **pwntools** per costruire il nostro nuovo *Proof of concept*:
 
 - `pip install pwntools`
 
-- Eseguiamo il file python  
+4. Aggiungiamo l'offset del canary al nuovo *poc*. Il resto verrà calcolato direttamente nello script: l'indirizzo di base della libc viene calcolato come al solito (eseguendo il comando  `ldd vuln32 | grep libc` dallo script), mentre per "bin/sh" e system function utilizziamo gli offset (che non cambiano) dall'indirizzo di base della libc.
+
+5. Eseguiamo il file python:
+
+```bash
+python3 poc_canary.py
+```
 
 #### Bypassare ASLR?
 
 - Attacco **Ret2PLT** (*Return to PLT*)
 
-- **ROP** (*Return oriented programming*) (su macchine 64-bit)
+- **ROP** (*Return Oriented Programming*) (su macchine 64-bit): è una tecnica che permette di prendere il controllo del flusso di esecuzione di un programma sfruttando sequenze di istruzioni già presenti nel binario o nelle librerie condivise caricate in memoria chiamate **gadget**.
 
 - Su 64-bit non possiamo usare system + return_addr + binsh, ma dobbiamo usare i registri (RDI, RSI, RDX, RCX, R8, R9). I primi 6 argomenti di una funzione vanno su questi registri, mentre 7 e 8 argomento vanno sullo stack.
 
@@ -72,7 +70,7 @@ checksec --file=vuln
 
 ##### ROP (Return Oriented Programming)
 
-- Bisogna trovare un gadget che esegua *pop rdi*;
+- Bisogna trovare un gadget che esegua *pop rdi;*
 
 - Quindi passiamo alla funzione:
 
@@ -81,7 +79,12 @@ checksec --file=vuln
   
   https://ir0nstone.gitbook.io/notes/binexp/stack/aslr/plt_and_got
 
+- **Ropper** è uno strumento usato per eseguire ROP. In particolare, permette di trovare gadget ROP in un binario o nelle librerie caricate e generare catene ROP (**ROP chains**) per l'exploit.
 
-- `ropper --search "pop rdi; ret" vuln64`
+```bash
+ropper --search "pop rdi; ret" vuln64
+```
 
-- `objdump -D vuln64 | grep main`
+```bash
+objdump -D vuln64 | grep main
+```

@@ -58,16 +58,16 @@ echo 0 | sudo tee /proc/sys/kernel/randomize_va_space
 
 - Ci sono varianti del *pocLIBC.py* in cui si specifica solo l'indirizzo di base della libc e si calcolano gli indirizzi di system, bin/sh ed exit utilizzando gli offset (distanza dall'indirizzo di base della libc) invece di indicare gli specifici indirizzi delle funzioni.
 
-- Per trovare l'offset dall'indirizzo di base di LIBC all'indirizzo di SYSTEM:
+- Per trovare l'offset dall'indirizzo di base di libc all'indirizzo di SYSTEM:
+
+```bash
+readelf -s /lib/i386-linux-gnu/libc.so.6 | grep system
+```
+
+- Per trovare l'offset dall'indirizzo di base di libc all'indirizzo di bin/sh:
 
 ```bash
 strings -a -t x /lib/i386-linux-gnu/libc.so.6 | grep '/bin/sh'
-```
-
-oppure
-
-```bash
-readelf
 ```
 
 
@@ -77,6 +77,6 @@ readelf
 echo 2 | sudo tee /proc/sys/jernel/randomize_va_space
 ```
 
-- In questo caso però, l'indirizzo base della libc non cambia completamente, ma cambiano solo i 2 bytes centrali dell'indirizzo. Quindi possiamo tentare un attacco bruteforce.
+- In questo caso, l'indirizzo base della libc dovrebbe cambiare periodicamente (avendo attivato ASLR). In realtà, non cambia completamente, ma cambiano solo i 2 bytes centrali dell'indirizzo. Quindi possiamo tentare un attacco bruteforce per cercare di indovinare i 2 bytes centrali.
 
-- Gli indirizzi di system e /bin/sh non cambiano, quindi dobbiamo solo trovare l'indirizzo base di libc
+- Gli offset di system e /bin/sh non cambiano mai, quindi dobbiamo solo trovare l'indirizzo base di libc.
