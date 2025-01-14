@@ -48,7 +48,7 @@ echo 0 | sudo tee /proc/sys/kernel/randomize_va_space
 
 2.  Usiamo `p system` (in GDB con eseguibile runnato) per trovare l'indirizzo della funzione SYSTEM della libc e copiamolo in *pocLIBC.py* nella variabile *system_addr* 0xf7dcc170
 
-3. Usiamo `find &__libc_start_main, +9999999, "/bin/sh"` (in GDB) per trovare l'indirizzo di funzione *bin/sh* e copiamolo in *pocLIBC.py* nella variabile *binsh_addr*. Per verificare che sia l'indirizzo giusto, usiamo `x/s <indirizzo>` -> restituisce tutte le stringhe all’indirizzo `<indirizzo>` (se ce ne sono), quindi se restituisce `/bin/sh` è l’indirizzo giusto 
+3. Usiamo `find &__libc_start_main, +9999999, "/bin/sh"` o `grep '/bin/sh'` (in GDB) per trovare l'indirizzo di funzione *bin/sh* e copiamolo in *pocLIBC.py* nella variabile *binsh_addr*. Per verificare che sia l'indirizzo giusto, usiamo `x/s <indirizzo>` -> restituisce tutte le stringhe all’indirizzo `<indirizzo>` (se ce ne sono), quindi se restituisce `/bin/sh` è l’indirizzo giusto 
 
 4. Eseguiamo il programma: `run $(python3 pocLIBC.py)`
 
