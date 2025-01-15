@@ -58,7 +58,9 @@ POST /email/change HTTP/1.1
 Host: vulnerable-website.com 
 Content-Type: application/x-www-form-urlencoded 
 Content-Length: 68 
-Cookie: session=pSJYSScWKpmC60LpFOAHKixuFuM4uXWF; csrfKey=rZHCnSzEp8dbI6atzagGoSYyqJqTz5dv csrf=RhV7yQDO0xcq9gLEah2WVbmuFqyOq7tY&email=wiener@normal-user.com
+Cookie: session=pSJYSScWKpmC60LpFOAHKixuFuM4uXWF; csrfKey=rZHCnSzEp8dbI6atzagGoSYyqJqTz5dv 
+
+csrf=RhV7yQDO0xcq9gLEah2WVbmuFqyOq7tY&email=wiener@normal-user.com
 ```
 
 In the code below, the attacker is constructing a request that, *if runned by the victim*, will have the victim's session cookie and the (injected) attacker's csrf token and csrf cookie (since the csrf token is tied only to the non-session cookie):

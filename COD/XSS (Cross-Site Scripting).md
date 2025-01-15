@@ -57,7 +57,7 @@ If another user of the application requests the attacker's URL, then the script 
 - ##### Lab: DOM XSS in `document.write` sink using source `location.search` inside a select element
 
 ```html
-product?productId=1&storeId="></select><img%20src=1%20onerror=alert(1)>
+product?productId=1&storeId="></select><img src=1 onerror=alert(1)>
 ```
 
 - ##### Lab: DOM XSS in `innerHTML` sink using source `location.search`
@@ -218,6 +218,8 @@ In this situation, an attacker would naturally attempt to perform XSS. But suppo
 
 Note that the attacker's payload doesn't close the `src` attribute, which is left *dangling*. When a browser parses the response, it will look ahead until it encounters a single quotation mark to terminate the attribute.
 
+The consequence of the attack is that the attacker can capture part of the application's response following the injection point, which might contain sensitive data.
+
 ## Content Security Policy (CSP)
 
 CSP is a browser security mechanism that works by restricting the resources (such as scripts and images) that a page can load and restricting whether a page can be framed by other pages.
@@ -232,16 +234,19 @@ The following directive will only allow scripts to be loaded from a specific dom
 
 	`script-src https://scripts.normal-website.com`
 
+- A good starting point to define a Content Security Policy:
+
+`default-src 'self'; script-src 'self'; object-src 'none'; frame-src 'none'; base-uri 'none';`
 
 ## Prevention
 
 - Validate input on arrival:
 	- If a user submits a URL that will be returned in responses, validate that it starts with a safe protocol such as HTTP and HTTPS.
-	- If a user supplies a value that it expected to be numeric, validate that the value actually contains an integer.
+	- If a user supplies a value that is expected to be numeric, validate that the value actually contains an integer.
 	- Validate that input contains only an expected set of characters.
 	- **Whitelisting**.
 
-- Not sanitize too much (why would I want to process a suspicious request?!?)
+- Not sanitize too much!
 	Example: If you drop `<script>` substrings, I will send `<s<script>cript>`
 - Escape (or encode) output:
 	In an HTML context, you should convert non-whitelisted values into HTML entities:
