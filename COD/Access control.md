@@ -337,7 +337,7 @@ GET https://0ad2003e03fefd2c852c5b7300d1006d.web-security-academy.net/download-t
 
 ## Prevention
 
-- Don't rely on on **obfuscation**!
+- Don't rely on **obfuscation**!
 - Secure default configurations:
 	- Deny access by default
 	- Authorize only administrators by default
