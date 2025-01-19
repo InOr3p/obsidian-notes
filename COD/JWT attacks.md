@@ -199,8 +199,6 @@ The JWS specification doesn't define a concrete structure for this ID - it's jus
 
 If this parameter is also vulnerable to directory traversal, an attacker could potentially force the server to use an arbitrary file from its filesystem as the verification key.
 
-If this parameter is also vulnerable to directory traversal, an attacker could potentially force the server to use an arbitrary file from its filesystem as the verification key.
-
 ```json
 { 
 	"kid": "../../path/to/file", 

@@ -9,7 +9,7 @@ Injection of custom scripts (usually HTML or Javascript) on a victim’s browser
 
 ##### Difference between Reflected and Stored XSS
 
-- The key difference between reflected and stored XSS is that a stored XSS vulnerability enables attacks that are self-contained within the application itself. The attacker does not need to find an external way of inducing other users to make a particular request containing their exploit. Rather, the attacker places their exploit into the application itself and simply waits for users to encounter it.
+- The key difference between reflected and stored XSS is that a stored XSS vulnerability enables attacks that are self-contained within the application itself. The attacker does not need to find an external way of inducing other users to make a particular request containing their exploit. Rather, the attacker places their exploit into the application itself and simply waits for users to encounter it. For the reflected XSS instead, the attacker should inject itself to check if there's XSS vulnerability and then *send a link* to the victim to execute the attack also to its browser. 
 
 ## Proof of Concept
 
@@ -228,11 +228,11 @@ To enable CSP, a response needs to include an HTTP response header called `Conte
 
 The following directive will only allow scripts to be loaded from the same origin as the page itself:
 
-	`script-src 'self'`
+`script-src 'self'`
 
 The following directive will only allow scripts to be loaded from a specific domain:
 
-	`script-src https://scripts.normal-website.com`
+`script-src https://scripts.normal-website.com`
 
 - A good starting point to define a Content Security Policy:
 

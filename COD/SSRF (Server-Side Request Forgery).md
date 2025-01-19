@@ -52,7 +52,6 @@ stockApi=http%3A%2F%2Fstock.weliketoshop.net%3A8080%2Fproduct%2Fstock%2Fcheck%3F
 
 to this `stockApi=http://localhost/admin/delete?username=carlos`
 
-
 ## SSRF attacks against other back-end systems
 
 In some cases, the application server is able to interact with back-end systems that are not directly reachable by users. In many cases, internal back-end systems contain sensitive functionality that can be accessed without authentication by anyone who is able to interact with the systems.
@@ -132,6 +131,7 @@ This SSRF exploit works because the application first validates that the supplie
 ###### Lab: SSRF with filter bypass via open redirection vulnerability
 
 Notice that the "Next product" request has an open redirect:
+
 ```http
 GET https://0a8e005504e77ce6806cd0e3002000ba.web-security-academy.net/product/nextProduct?currentProductId=2&path=/product?productId=3 HTTP/1.1
 ```
@@ -143,8 +143,6 @@ Now intercept the stock checker request and change the `stockApi` with `stockApi
 Blind SSRF vulnerabilities occur if you can cause an application to send a back-end HTTP request to a supplied URL, but the response from the back-end request is not returned in the application's front-end response.
 
 Blind SSRF is harder to exploit but sometimes leads to full remote code execution (**RCE**) on the server or other back-end components.
-
-
 
 ## Prevention
 

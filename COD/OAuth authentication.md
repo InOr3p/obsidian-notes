@@ -22,7 +22,10 @@ For any OAuth grant type, the client application has to specify which data it wa
 
 The client application sends a request to the OAuth service's `/authorization` endpoint asking for permission to access specific user data. Note that the endpoint mapping may vary between providers. However, you should always be able to identify the endpoint based on the parameters used in the request.
 
-`GET /authorization?client_id=12345&redirect_uri=https://client-app.com/callback&response_type=code&scope=openid%20profile&state=ae13d489bd00e3c24 HTTP/1.1 Host: oauth-authorization-server.com`
+```http
+GET /authorization?client_id=12345&redirect_uri=https://client-app.com/callback&response_type=code&scope=openid%20profile&state=ae13d489bd00e3c24 HTTP/1.1 
+Host: oauth-authorization-server.com
+```
 
 This request contains the following noteworthy parameters, usually provided in the query string:
 
@@ -44,7 +47,7 @@ This request contains the following noteworthy parameters, usually provided in t
     
 - `state`
     
-    Stores a unique, unguessable value that is tied to the current session on the client application. The OAuth service should return this exact value in the response, along with the authorization code. This parameter serves as a form of CSRF token for the client application by making sure that the request to its `/callback` endpoint is from the same person who initiated the OAuth flow.
+    Stores a unique, unguessable value that is tied to the current session on the client application. The OAuth service should return this exact value in the response, along with the authorization code. This parameter serves as a form of **CSRF token** for the client application by making sure that the request to its `/callback` endpoint is from the same person who initiated the OAuth flow.
 
 #### 2. User login and consent
 
@@ -96,7 +99,7 @@ The OAuth service will validate the access token request. If everything is as ex
 
 #### 6. API call
 
-Now the client application has the access code, it can finally fetch the user's data from the resource server. To do this, it makes an API call to the OAuth service's `/userinfo` endpoint. The access token is submitted in the `Authorization: Bearer` header to prove that the client application has permission to access this data.
+Now that the client application has the access code, it can finally fetch the user's data from the resource server. To do this, it makes an API call to the OAuth service's `/userinfo` endpoint. The access token is submitted in the `Authorization: Bearer` header to prove that the client application has permission to access this data.
 
 ```http
 GET /userinfo HTTP/1.1 

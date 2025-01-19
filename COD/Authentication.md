@@ -25,7 +25,7 @@ Some of the most common vulnerabilities are:
 
 ### Vulnerabilities in password-based login
 
-- **Password-base authentication**: users provide credentials, a username and a password. The system compares the credentials with those stored, granting access if a match is found.
+- **Password-based authentication**: users provide credentials, a username and a password. The system compares the credentials with those stored, granting access if a match is found.
 
 In this scenario, the fact that they know the secret password is taken as sufficient proof of the user's identity. This means that the security of the website is compromised if an attacker is able to either obtain or guess the login credentials of another user.
 
@@ -95,8 +95,9 @@ temp-forgot-password-token=g3kr0iay75ugx1ub30ww9ztn914yz0b1&username=wiener&new-
 
 - Don’t save users’ passwords! Not in clear, not even encrypted
 - Store the **hash value** of the password combined with a **salt** value! Salt makes **rainbow tables** exponentially bigger (so they cannot be produced). Modern password hash/salt scheme use **Bcrypt**, which includes a cost variable (the number of iterations of the hash function)
-- Use the **Password Protocol**: the server sends to the client a **nonce** which will be used to hash the password. The client will then send to the server the hashed password. The nonce protects against **replay attacks**!
+- Use the **Password Protocol**: the server sends to the client a **nonce** which will be used to hash the password. The client will then send to the server the hashed password. The nonce protects against **replay attacks** (since it changes at every session)!
 - Use the **Token Protocol**: user password is used to generate a token, which is stored on the server
 - Use **HTTPS** (redirect any HTTP request to HTTPS)
 - Prevent username enumeration: generic and identical error messages for invalid username or password
 - Implement robust brute-force protection: implement CAPTCHA test with every login attempt
+- Slow down login attempts: lock the attacked account or block attacker’s IP address

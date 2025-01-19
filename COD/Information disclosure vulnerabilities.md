@@ -51,7 +51,7 @@ GET /product?productId="example"
 
 - To solve the lab, obtain the header name then use it to bypass the lab's authentication. Access the admin interface and delete the user `carlos`.
 
-- If you try to accesso to the /admin endpoint, you can notice the message *"Admin interface only available to local users"*
+- If you try to accessoto the */admin* endpoint, you can notice the message *"Admin interface only available to local users"*
 
 - Add the header `X-Custom-IP-Authorization: 127.0.0.1` to the endpoint `delete?username=carlos`. Now you should have been deleted the user carlos
 

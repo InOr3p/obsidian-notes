@@ -79,7 +79,7 @@ https://0a0000cd0491ce578327d7a000060052.web-security-academy.net/image?filename
 
 ### Encoded traversal sequence bypass 
 
-In some contexts, such as in a URL path or the `filename` parameter of a `multipart/form-data` request, web servers may strip any directory traversal sequences before passing your input to the application. You can sometimes bypass this kind of sanitization by URL encoding, or even double URL encoding, the `../` characters. This results in `%2e%2e%2f` and `%252e%252e%252f` respectively.
+In some contexts, such as in a URL path or the `filename` parameter of a `multipart/form-data` request, web servers may strip any directory traversal sequences before passing your input to the application. You can sometimes bypass this kind of sanitization by URL encoding, or even double URL encoding the `../` characters. This results in `%2e%2e%2f` and `%252e%252e%252f` respectively.
 
 ###### Lab: File path traversal, traversal sequences stripped with superfluous URL-decode
 
