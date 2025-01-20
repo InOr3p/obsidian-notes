@@ -3,7 +3,7 @@
 
 ## Example
 
-A web user accesses a decoy website (perhaps this is a link provided by an email) and clicks on a button to win a prize. Unknowingly, they have been deceived by an attacker into pressing an alternative hidden button and this results in the payment of an account on another site. This is an example of a clickjacking attack. The technique depends upon the incorporation of an invisible, actionable web page (or multiple pages) containing a button or hidden link, say, within an iframe. The iframe is overlaid on top of the user's anticipated decoy web page content but it''s made almost invisible. Hence, the victim will see the decoy web page, but it'll click on the target website (iframe). 
+A web user accesses a decoy website (perhaps this is a link provided by an email) and clicks on a button to win a prize. Unknowingly, they have been deceived by an attacker into pressing an alternative hidden button and this results in the payment of an account on another site. This is an example of a clickjacking attack. The technique depends upon the incorporation of an invisible, actionable web page (or multiple pages) containing a button or hidden link, say, within an iframe. The iframe is overlaid on top of the user's anticipated decoy web page content, but it's made almost invisible. Hence, the victim will see the decoy web page, but it'll click on the target website (iframe). 
 
 ```html
 <head> 
@@ -33,6 +33,7 @@ z-index:1;
 ## Labs
 
 ###### Lab: Basic clickjacking with CSRF token protection
+
 ```html
 <style>
     iframe {
@@ -55,6 +56,7 @@ font-size: 20px;
 ```
 
 ###### Lab: Clickjacking with form input data prefilled from a URL parameter
+
 ```html
 <style>
     iframe {
@@ -88,9 +90,12 @@ Scripts are often crafted so that they perform some or all of the following beha
 
 Frame busting techniques are often browser and platform specific and because of the flexibility of HTML they can usually be circumvented by attackers. As frame busters are JavaScript then the browser's security settings may prevent their operation or indeed the browser might not even support JavaScript. An effective attacker workaround against frame busters is to use the HTML5 iframe `sandbox` attribute. When this is set with the `allow-forms` or `allow-scripts` values (and the `allow-top-navigation` value is omitted) then the frame buster script can be neutralized as the iframe cannot check whether or not it is the top window:
 
-`<iframe id="victim_website" src="https://victim-website.com" sandbox="allow-forms"></iframe>`
+```html
+<iframe id="victim_website" src="https://victim-website.com" sandbox="allow-forms"></iframe>
+```
 
 ###### Lab: Clickjacking with a frame buster script
+
 ```html
 <style>
     iframe {
@@ -114,9 +119,10 @@ font-size: 25px;
 
 ### Combining clickjacking with a DOM XSS attack
 
-The true potency of clickjacking is revealed when it is used as a carrier for another attack such as a **DOM XSS attack**. After the attacker has  identified the XSS exploit, then it can be combined with the iframe target URL so that the user clicks on the button or link and consequently executes the DOM XSS attack.
+The true potency of clickjacking is revealed when it is used as a carrier for another attack such as a **DOM XSS attack**. After the attacker has identified the XSS exploit, then it can be combined with the iframe target URL so that the user clicks on the button or link and consequently executes the DOM XSS attack.
 
 ###### Lab: Exploiting clickjacking vulnerability to trigger DOM-based XSS
+
 ```html
 <style>
     iframe {
@@ -138,8 +144,8 @@ The true potency of clickjacking is revealed when it is used as a carrier for an
 <iframe src="https://0a1a00fa04b6229380bf675000e1007c.web-security-academy.net/feedback?name=<img src=1 onerror=print()>&subject=sub&message=mexx&email=ema@gmail.com"></iframe>
 ```
 
-
 ###### Lab: Multistep clickjacking
+
 ```html
 <style>
     iframe {

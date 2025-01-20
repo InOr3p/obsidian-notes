@@ -94,7 +94,7 @@ Most importantly in this context, some languages have magic methods that are inv
 - PHP's `unserialize()` method looks for and invokes an object's `__wakeup()` magic method.
 Anyway, there are many magic methods called automatically:
 
-- `__constructor()` and `__wakeup()` are used during instantiation;
+- `__constructor()` and `__wakeup()` are used during instantiation
 - `__destruct()` is called when the object is not needed anymore
 - `__call()` is invoked when an undefined method is called
 
