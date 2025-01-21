@@ -42,7 +42,7 @@ Access-Control-Allow-Origin: https://normal-website.com
 
 The browser will allow code running on `normal-website.com` to access the response because the origins match.
 
-The specification of `Access-Control-Allow-Origin` allows for multiple origins, or the value `null`, or the wildcard `*`.
+The specification of `Access-Control-Allow-Origin` allows for multiple origins, or the value `null`, or the wildcard `*`. But `Access-Control-Allow-Origin` equal to `*` disables access to credentials, hence we can't use `Access-Control-Allow-Credential` in this case. 
 
 - The default behavior of cross-origin resource requests is for requests to be passed without credentials like cookies and the Authorization header. However, the cross-domain server can permit reading of the response when credentials are passed to it by setting the CORS `Access-Control-Allow-Credentials` header to true.
 

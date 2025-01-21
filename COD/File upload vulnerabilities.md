@@ -86,7 +86,7 @@ This lab contains a vulnerable image upload function. It attempts to prevent use
 
 ### Preventing file execution in user-accessible directories
 
-As a precaution, servers generally only run scripts whose MIME type they have been explicitly configured to execute. Otherwise, they may just return some kind of error message or, in some cases, serve the contents of the file as plain text instead:
+As a precaution, servers generally only run scripts whose MIME type they have been explicitly configured to execute. Otherwise, they may just return some kind of error message or, in some cases, serve the contents of the file as plain text instead.
 
 This behavior may provide a way to leak source code, but it nullifies any attempt to create a web shell.
 
