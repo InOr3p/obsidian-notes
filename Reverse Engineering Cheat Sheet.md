@@ -110,17 +110,23 @@ Every function usually starts and ends with a "handshake" to manage the stack.
     
     - `gdb ./binary`
         
-    - `break main`: Set a stop point at the start.
+    - `b main`: Set a breakpoint at the start of the main function.
+		
+	- `b *<addr>`: Set a breakpoint at `<addr>` memory address.
         
-    - `run`: Execute until a breakpoint.
+    - `run` or simply `r`: Execute until a breakpoint.
+		
+	- `continue` or simply `c`: Continue the code execution.
         
     - `ni` / `si`: Next Instruction / Step Into.
 		
-	- `disass main`: Dissasemble the main function into assembly code.
+	- `disass main`: Disassemble the main function into assembly code.
 		
 	- `x/s <addr>`: Examine the memory at that address as a string (you can also examine as an address `x/a`, as a number of characters `x/10c`, as hex `x/x` and as instruction `x/i`).
-        
-    - `x/10gx $rsp`: Examine 10 hex words at the Stack Pointer. In this case, `g` is the unit size (it could be `b` for byte, `h` for halfword/2-bytes, `w` for word/4-bytes, `g` for giant/8-bytes).
+		
+	- `x/s $eax`: It doesn't show you what is inside the register `$eax`; it uses the value in the register as a "map coordinate" to go look at a spot in memory.
+		
+	- `p/d $eax`: It shows the **actual content** of the register itself.
 
 ### 3. IDA Pro / Free
 
