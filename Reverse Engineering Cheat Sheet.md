@@ -1,16 +1,18 @@
 
 ## **Useful Linux commands**
 
-|**Command**|**Purpose**|**Why it matters**|
-|---|---|---|
-|`file <bin>`|**File Identification**|Tells you if it's ELF (Linux), PE (Windows), 32/64 bit, or "stripped."|
-|`strings <bin>`|**Text Extraction**|Finds hardcoded URLs, IP addresses, flag hints, or error messages.|
-|`nm <bin>`|**Symbol Listing**|Shows function names and global variables (if the binary isn't stripped).|
-|`ldd <bin>`|**Library Deps**|Shows which shared libraries (`.so` files) the program loads.|
-|`readelf -h <bin>`|**Header Info**|Displays the Entry Point (where the code starts) and Architecture.|
-|`objdump -d <bin>`|**Disassembler**|Converts machine code into assembly. Use `-M intel` for readable syntax.|
-|`strace <bin>`|**Syscall Trace**|Logs every time the program asks the OS to do something (read file, open socket).|
-|`ltrace <bin>`|**Library Trace**|Logs calls to dynamic libraries (e.g., `strcpy`, `malloc`, `printf`).|
+| **Command**                      | **Purpose**             | **Why it matters**                                                                |
+| -------------------------------- | ----------------------- | --------------------------------------------------------------------------------- |
+| `file <bin>`                     | **File Identification** | Tells you if it's ELF (Linux), PE (Windows), 32/64 bit, or "stripped."            |
+| `strings <bin>`                  | **Text Extraction**     | Finds hardcoded URLs, IP addresses, flag hints, or error messages.                |
+| `nm <bin>`                       | **Symbol Listing**      | Shows function names and global variables (if the binary isn't stripped).         |
+| `ldd <bin>`                      | **Library Deps**        | Shows which shared libraries (`.so` files) the program loads.                     |
+| `ldd -u <bin>`                   | **Library Deps**        | Shows the unused shared libraries.                                                |
+| `readelf -h <bin>`               | **Header Info**         | Displays the Entry Point (where the code starts) and Architecture.                |
+| `objdump -d <bin>`               | **Disassembler**        | Converts machine code into assembly. Use `-M intel` for readable syntax.          |
+| `objdump -s -j <.section> <bin>` | **Section content**     | Shows the full content of a section of the file.                                  |
+| `strace <bin>`                   | **Syscall Trace**       | Logs every time the program asks the OS to do something (read file, open socket). |
+| `ltrace <bin>`                   | **Library Trace**       | Logs calls to dynamic libraries (e.g., `strcpy`, `malloc`, `printf`, `strcmp`).   |
 
 ## **x86_64 Register Map**
 
